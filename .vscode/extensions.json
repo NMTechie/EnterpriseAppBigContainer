@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "yzhang.markdown-all-in-one",
+    "esbenp.prettier-vscode",
+    "ms-vscode.csharp",
+    "formulahendry.code-runner",
+    "dsznajder.es7-react-js-snippets",
+    "hashicorp.terraform",
+    "ms-vscode.powershell",
+    "wallabyjs.quokka-vscode",
+    "humao.rest-client"
+  ],
+  "unwantedRecommendations": ["postman.postman-for-vscode"]
+}
