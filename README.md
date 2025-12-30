@@ -2,6 +2,8 @@
 - [Editor Setup](#editor-setup)
   - [.editorConfig vs Extention recomendation](#editorconfig-vs-extention-recomendation)
   - [devContainer vs testContainer (TO DO)](#devcontainer-vs-testcontainer-to-do)
+- [Coding Piece](#coding-piece)
+  - [Adoption of Command Chaining](#adoption-of-command-chaining)
 
 # Why the repo name is like this?
 The main moto is to stick onto one single repo and add technology based experiments in different folder. This will help to maintainence and further promote automation. The final goal is to create better documentation with every single thought and trade-offs and also integrate full automation with the extent possible.
@@ -30,3 +32,8 @@ Thus looks for the options that I have through I could enforce / warn about reco
 > 3. Commit .vscode/extensions.json to your repo.
 
 ## devContainer vs testContainer (TO DO)
+
+# Coding Piece
+The **src** folder will contain the codes of different use cases and scenarios.
+## Adoption of Command Chaining
+Here the intension is to create pipeline based orchestration through code that will be flexible and configuration driven. It will actually going to execute business rule/steps in a defined sequence and if being changed in configuration then the sequence will be changed. However it will not require any code change. It gives flexibility defining the rule based product offering through orchestration.
