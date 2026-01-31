@@ -5,6 +5,9 @@
 - [Open Telemetry](#open-telemetry)
   - [The main components of Open Telemetry](#the-main-components-of-open-telemetry)
 - [Coding Piece](#coding-piece)
+  - [Setting Up VS Code for .NET Development](#setting-up-vs-code-for-net-development)
+    - [How to generate launch.json](#how-to-generate-launchjson)
+    - [The deatils structure of launch.json](#the-deatils-structure-of-launchjson)
   - [Adoption of Command Chaining](#adoption-of-command-chaining)
   - [Open Telemetry in .NET](#open-telemetry-in-net)
 
@@ -51,8 +54,38 @@ The details of the basic things are available at https://opentelemetry.io/docs/.
 
 # Coding Piece
 The **src** folder will contain the codes of different use cases and scenarios.
+
+## Setting Up VS Code for .NET Development
+* The main extension that requires C# Dev Kit (by Microsoft). 
+* Nuget project manager should be handled by command line interface through vs code integrated terminal
+
+_**The "Setup as Startup Project Option"**_ is not available in VS Code rather your need it is managed by defining debug configurations in the launch.json file. This file resides at: .vscode/launch.json within your workspace (project) folder.
+
+### How to generate launch.json
+1. Go to the Run and Debug tab (sidebar or Ctrl+Shift+D).
+2. Click "create a launch.json file", select .NET/C# if prompted.
+
+### The deatils structure of launch.json
+Explanation of the Most Important Settings. 
+| Property      | What It Does / Example Value                                                                                                                                |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| name          | Displayed in Run/Debug list in VS Code. Any string.                                                                                                         |
+| type          | Must be coreclr for .NET/C# debugging.                                                                                                                      |
+| request       | "launch" (start new process) or "attach" (attach to running).                                                                                               |
+| preLaunchTask | Optionally runs a named task before debugging (like "build").                                                                                               |
+| program       | Critical — path to the .NET assembly (.dll) or executable you want to debug. Use variables: ${workspaceFolder} points to the root folder opened in VS Code. |
+| args          | Command-line arguments (array of strings).                                                                                                                  |
+| cwd           | Current working directory at start.                                                                                                                         |
+| stopAtEntry   | true = debugger breaks immediately on startup.                                                                                                              |
+| console       | Where app output appears—internalConsole, integratedTerminal, or externalTerminal.                                                                          |
+| env           | Environment variables as key-value pairs.                                                                                                                   |
+| envFile       | Path to a .env file to load additional environment variables.                                                                                               |
+| justMyCode    | true = step through your code only, not dependencies. 
+
+
 ## Adoption of Command Chaining
 Here the intension is to create pipeline based orchestration through code that will be flexible and configuration driven. It will actually going to execute business rule/steps in a defined sequence and if being changed in configuration then the sequence will be changed. However it will not require any code change. It gives flexibility defining the rule based product offering through orchestration.
 
 ## Open Telemetry in .NET
 This implementation targets to build a .net application that use open telemetry priciples for observability. Also reduce library specific dependency rather adopt OpTeL framework. 
+
