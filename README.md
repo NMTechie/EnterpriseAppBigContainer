@@ -8,6 +8,10 @@
   - [Setting Up VS Code for .NET Development](#setting-up-vs-code-for-net-development)
     - [How to generate launch.json](#how-to-generate-launchjson)
     - [The deatils structure of launch.json](#the-deatils-structure-of-launchjson)
+    - [Create a New Project using .NET CLI Templates](#create-a-new-project-using-net-cli-templates)
+      - [Create a New Project:](#create-a-new-project)
+      - [Manage Solutions (.sln files) like Visual Studio](#manage-solutions-sln-files-like-visual-studio)
+      - [More in Project Templates:](#more-in-project-templates)
   - [Adoption of Command Chaining](#adoption-of-command-chaining)
   - [Open Telemetry in .NET](#open-telemetry-in-net)
 
@@ -59,7 +63,7 @@ The **src** folder will contain the codes of different use cases and scenarios.
 * The main extension that requires C# Dev Kit (by Microsoft). 
 * Nuget project manager should be handled by command line interface through vs code integrated terminal
 
-_**The "Setup as Startup Project Option"**_ is not available in VS Code rather your need it is managed by defining debug configurations in the launch.json file. This file resides at: .vscode/launch.json within your workspace (project) folder.
+_**The "Setup as Startup Project Option"**_ is not available in VS Code rather you need to managed by defining debug configurations in the launch.json file. This file resides at: .vscode/launch.json within your workspace (project) folder.
 
 ### How to generate launch.json
 1. Go to the Run and Debug tab (sidebar or Ctrl+Shift+D).
@@ -81,6 +85,50 @@ Explanation of the Most Important Settings.
 | env           | Environment variables as key-value pairs.                                                                                                                   |
 | envFile       | Path to a .env file to load additional environment variables.                                                                                               |
 | justMyCode    | true = step through your code only, not dependencies. 
+
+### Create a New Project using .NET CLI Templates
+Open your terminal (command prompt, bash, PowerShell, etc.), not in VS Code’s menus.
+```sh
+dotnet new list
+```
+You’ll see many choices, like `console`, `classlib`, `webapi`, `mvc`, `wpf`, `maui`, etc.
+
+#### Create a New Project:
+```sh
+dotnet new console -n MyConsoleApp
+```
+This creates a ![Static Badge](https://img.shields.io/badge/MyconsoleApp_folder-red) and puts all starter files inside.
+```sh
+# More Examples
+dotnet new classlib -n MyLibrary
+dotnet new wpf -n MyWpfApp        # Windows only
+dotnet new maui -n MyMauiApp      # Cross-platform UI (extra setup required)
+dotnet new worker -n MyWorker     # Background service template
+dotnet new blazorserver -n MyBlazorApp
+```
+Full list at [.NET templates docs](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-new).
+
+#### Manage Solutions (.sln files) like Visual Studio
+Most templates create a single project, not a solution.To create a solution (multi-project setup):
+```sh
+dotnet new sln -n ExampleOfOpenTelemetry -f sln
+dotnet new sln --help
+dotnet sln MySolution.sln add MyConsoleApp/MyConsoleApp.csproj
+dotnet sln MySolution.sln add MyLibrary/MyLibrary.csproj
+```
+Then open the folder containing the .sln file in VS Code. if you want to _**Add More Projects to Your Solution**_ then 
+```sh
+dotnet new classlib -n MyLibrary
+dotnet sln add MyLibrary/MyLibrary.csproj
+```
+#### More in Project Templates:
+You can combine options and flags!. Like
+```sh
+dotnet new webapi -n MyApiApp --framework net8.0
+# The most extensive command that could be arised in daily use (check dotnet new webapi --help)
+dotnet new webapi -n FirstApi -f net10.0 -au None --exclude-launch-settings false --no-https false --no-openapi true --use-program-main true --use-controllers true -lang C#
+```
+
 
 
 ## Adoption of Command Chaining

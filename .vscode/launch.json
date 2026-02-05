@@ -5,10 +5,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": ".NET Core Launch (console)",
+      "name": "LaunchChainOfCommandExample",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "build",
+      "preLaunchTask": "ChainOfCommandExamplebuild",
       "program": "CallerOfCommandChain.dll",
       "args": [],
       "cwd": "${workspaceFolder}/src/CommandChainingEx/CallerOfCommandChain/bin/Debug/net8.0",
@@ -19,6 +19,36 @@
       },
       "console": "internalConsole",
       "justMyCode": true // If true, skips debugging code outside your own projects (SDKs, etc.)
+    },
+    {
+      "name": "LaunchFisrtAPI",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "FisrtAPIbuild",
+      "program": "FirstApi.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/ExOFOpTel/FirstApi/bin/Debug/net10.0",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "console": "internalConsole",
+      "justMyCode": false
+    },
+    {
+      "name": "LaunchSecondAPI",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "SecondAPIbuild",
+      "program": "SecApi.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/ExOFOpTel/SecApi/bin/Debug/net10.0",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "console": "internalConsole",
+      "justMyCode": false
     }
   ]
 }
