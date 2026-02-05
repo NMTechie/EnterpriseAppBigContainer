@@ -33,7 +33,9 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "console": "internalConsole",
-      "justMyCode": false
+      "justMyCode": false,
+      "launchSettingsProfile": "https",
+      "launchSettingsFilePath": "${workspaceFolder}/src/ExOFOpTel/FirstApi/Properties/launchSettings.json"
     },
     {
       "name": "LaunchSecondAPI",
@@ -48,7 +50,9 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "console": "internalConsole",
-      "justMyCode": false
+      "justMyCode": false,
+      "launchSettingsProfile": "https",
+      "launchSettingsFilePath": "${workspaceFolder}/src/ExOFOpTel/SecApi/Properties/launchSettings.json"
     }
   ]
 }
