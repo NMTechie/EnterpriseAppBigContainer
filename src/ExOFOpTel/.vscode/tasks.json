@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "FisrtAPIbuild",
+      "command": "dotnet",
+      "type": "process",
+      "args": ["build", "${workspaceFolder}/FirstApi/FirstApi.csproj"],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "SecondAPIbuild",
+      "command": "dotnet",
+      "type": "process",
+      "args": ["build", "${workspaceFolder}/SecApi/SecApi.csproj"],
+      "problemMatcher": "$msCompile"
+    }
+  ]
+}

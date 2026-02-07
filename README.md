@@ -12,8 +12,10 @@
       - [Create a New Project:](#create-a-new-project)
       - [Manage Solutions (.sln files) like Visual Studio](#manage-solutions-sln-files-like-visual-studio)
       - [More in Project Templates:](#more-in-project-templates)
+      - [Nuget Package Management](#nuget-package-management)
   - [Adoption of Command Chaining](#adoption-of-command-chaining)
   - [Open Telemetry in .NET](#open-telemetry-in-net)
+    - [Adding Trace](#adding-trace)
 
 # Why the repo name is like this?
 The main moto is to stick onto one single repo and add technology based experiments in different folder. This will help to maintainence and further promote automation. The final goal is to create better documentation with every single thought and trade-offs and also integrate full automation with the extent possible. 
@@ -62,6 +64,10 @@ The **src** folder will contain the codes of different use cases and scenarios.
 ## Setting Up VS Code for .NET Development
 * The main extension that requires C# Dev Kit (by Microsoft). 
 * Nuget project manager should be handled by command line interface through vs code integrated terminal
+* To work the intellisense properly open the folder in vscode that contain .sln file (in case of multi-project support) or the .csproj file. 
+* The above being the constarint you should have your `launch.json` and `task.json` files at the root of your solution folder
+* > This opens up an interesting observation. If you look closely then you will realize that `launch.json` and `task.json` files sits inside the `.vscode` folder which is vscode IDE specific. In the same way `.vs` folder is Visual Studio IDE specific.
+* Continuing to the above it gives flexibility to define by launch technique at different level which is awesome.
 
 _**The "Setup as Startup Project Option"**_ is not available in VS Code rather you need to managed by defining debug configurations in the launch.json file. This file resides at: .vscode/launch.json within your workspace (project) folder.
 
@@ -85,6 +91,8 @@ Explanation of the Most Important Settings.
 | env           | Environment variables as key-value pairs.                                                                                                                   |
 | envFile       | Path to a .env file to load additional environment variables.                                                                                               |
 | justMyCode    | true = step through your code only, not dependencies. 
+| launchSettingsFilePath    | The path of the launchSettings path of your project that you want to launch through launch.json. 
+| launchSettingsProfile    | Specify the profiles that you want to use when launching the application during debug. 
 
 ### Create a New Project using .NET CLI Templates
 Open your terminal (command prompt, bash, PowerShell, etc.), not in VS Code’s menus.
@@ -129,6 +137,27 @@ dotnet new webapi -n MyApiApp --framework net8.0
 dotnet new webapi -n FirstApi -f net10.0 -au None --exclude-launch-settings false --no-https false --no-openapi true --use-program-main true --use-controllers true -lang C#
 ```
 
+#### Nuget Package Management
+
+dotnet add path/to/ProjectFile.csproj package PackageName
+
+1. Using the .NET CLI
+You can add, remove, or update package sources right from your terminal:
+
+To Add a Custom Source:
+sh
+dotnet nuget add source "https://custom-source-url/" --name CustomSource
+Replace the URL and CustomSource with your actual feed and name.
+If your feed requires authentication, see below.
+To Remove a Source:
+sh
+dotnet nuget remove source CustomSource
+To List All Sources:
+sh
+dotnet nuget list source
+This modifies your user-level or specified nuget.config.
+
+
 
 
 ## Adoption of Command Chaining
@@ -137,3 +166,37 @@ Here the intension is to create pipeline based orchestration through code that w
 ## Open Telemetry in .NET
 This implementation targets to build a .net application that use open telemetry priciples for observability. Also reduce library specific dependency rather adopt OpTeL framework. 
 
+### Adding Trace  
+> First add the nuget packges to the project by means to inject OpTel .net dependencies
+```sh 
+dotnet add .\src\ExOFOpTel\FirstApi\FirstApi.csproj package OpenTelemetry.Extensions.Hosting --version 1.15.0
+dotnet add .\src\ExOFOpTel\FirstApi\FirstApi.csproj package OpenTelemetry.Instrumentation.AspNetCore --version 1.15.0
+dotnet add .\src\ExOFOpTel\FirstApi\FirstApi.csproj package OpenTelemetry.Exporter.Console --version 1.15.0
+```
+> Then check whether all dependencies installed successfully 
+```sh 
+dotnet list .\src\ExOFOpTel\FirstApi\FirstApi.csproj package 
+```
+> Update the `Program.cs` file with the following code:
+```csharp
+using System.Diagnostics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure OpenTelemetry with tracing and auto-start.
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource
+        .AddService(serviceName: builder.Environment.ApplicationName))
+    .WithTracing(tracing => tracing
+        .AddAspNetCoreInstrumentation()
+        .AddConsoleExporter());
+
+var app = builder.Build();
+
+app.MapGet("/", () => $"Hello World! OpenTelemetry Trace: {Activity.Current?.Id}");
+
+app.Run();
+
+```

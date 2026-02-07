@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "LaunchChainOfCommandExample",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "ChainOfCommandExamplebuild",
+      "program": "CallerOfCommandChain.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/CallerOfCommandChain/bin/Debug/net8.0",
+      "stopAtEntry": false,
+      "env": {
+        // Optional: environment variables
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "console": "internalConsole",
+      "justMyCode": true // If true, skips debugging code outside your own projects (SDKs, etc.)
+    }
+  ]
+}

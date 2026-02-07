@@ -1,3 +1,7 @@
+using System.Diagnostics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+
 namespace FirstApi;
 
 public class Program
