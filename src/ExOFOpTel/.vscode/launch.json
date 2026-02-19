@@ -38,5 +38,13 @@
       "launchSettingsProfile": "https",
       "launchSettingsFilePath": "${workspaceFolder}/SecApi/Properties/launchSettings.json"
     }
+  ],
+  "compounds": [
+    {
+      "name": "Debug FirstApi + Run SecApi (No Debug)",
+      "configurations": ["LaunchFisrtAPI"],
+      "preLaunchTask": "StartSecondApiWithOutDebug",
+      "stopAll": true
+    }
   ]
 }

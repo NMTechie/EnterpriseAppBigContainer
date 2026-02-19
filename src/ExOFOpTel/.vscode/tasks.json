@@ -14,6 +14,31 @@
       "type": "process",
       "args": ["build", "${workspaceFolder}/SecApi/SecApi.csproj"],
       "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "StartSecondApiWithOutDebug",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceFolder}/SecApi/SecApi.csproj",
+        "--launch-profile",
+        "https"
+      ],
+      "isBackground": true,
+      "problemMatcher": {
+        "base": "$msCompile",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Now listening on: http://|Application started\\. Press Ctrl\\+C to shut down\\."
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
     }
   ]
 }

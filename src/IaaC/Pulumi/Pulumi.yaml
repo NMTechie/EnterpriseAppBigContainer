@@ -1,0 +1,10 @@
+name: RepoInfrastructure
+description: This creates Infra through Pulumi in C#
+runtime: dotnet
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: azure-csharp
+  pulumi:autonaming:
+    value:
+      pattern: "${stack}${name}"

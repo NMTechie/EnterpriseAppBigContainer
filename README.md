@@ -4,6 +4,11 @@
   - [devContainer vs testContainer (TO DO)](#devcontainer-vs-testcontainer-to-do)
 - [Open Telemetry](#open-telemetry)
   - [The main components of Open Telemetry](#the-main-components-of-open-telemetry)
+  - [What are exemplars](#what-are-exemplars)
+  - [Notes](#notes)
+- [IaaC](#iaac)
+  - [Pulumi](#pulumi)
+    - [Pulumi Naming Convention](#pulumi-naming-convention)
 - [Coding Piece](#coding-piece)
   - [Setting Up VS Code for .NET Development](#setting-up-vs-code-for-net-development)
     - [How to generate launch.json](#how-to-generate-launchjson)
@@ -13,6 +18,7 @@
       - [Manage Solutions (.sln files) like Visual Studio](#manage-solutions-sln-files-like-visual-studio)
       - [More in Project Templates:](#more-in-project-templates)
       - [Nuget Package Management](#nuget-package-management)
+      - [How you run multiple project in a solution](#how-you-run-multiple-project-in-a-solution)
   - [Adoption of Command Chaining](#adoption-of-command-chaining)
   - [Open Telemetry in .NET](#open-telemetry-in-net)
     - [Adding Trace](#adding-trace)
@@ -57,6 +63,54 @@ The details of the basic things are available at https://opentelemetry.io/docs/.
 5. Context Propagation :--> With context propagation, signals (traces, metrics, and logs) can be correlated with each other, regardless of where they are generated. Although not limited to tracing, context propagation allows traces to build causal information about a system across services that are arbitrarily distributed across process and network boundaries. For more info please visit https://opentelemetry.io/docs/concepts/context-propagation/
 6. Baggage :--> In OpenTelemetry, Baggage is contextual information that resides next to context. Baggage is a key-value store, which means it lets you propagate any data you like alongside context. 
 
+## What are exemplars
+[Exemplars](https://opentelemetry.io/docs/languages/dotnet/metrics/exemplars/) are example data points for aggregated data. They provide specific context to otherwise general aggregations. One common use case is to gain the ability to correlate metrics to traces (and logs).
+
+Exemplars represent individual measurements that are part of an aggregated metric. They allow you to:
+- Link metrics to traces that were active when the measurement was taken
+- Identify outliers or interesting data points within aggregated metrics
+- Better understand the causes of metric changes by exploring associated traces
+
+> _**At the time of wirtting this article AppInsight does not support the concept of Exemplars like Google Cloud Monitoring or Prometheus+Grafana stack**_
+
+## Notes
+
+> - So, lets say there is controller ..... request lands here .... then it flows through the presentation .... application .... business .... data access .... DB .... layers ......having said that ....... trace probabaly capture the request that lands in presentation and the DB layer as it falls in same transaction ..... but will not be able to info about  presentation .... application .... business .... data access layers ..... probably here the logs come into play ....... r8 ?
+
+You are absolutely right—and your understanding is solid!
+
+Ideally: Instrument as many meaningful layers as possible for tracing, so you can see end-to-end span relationships (but avoid excessive span granularity for performance reasons).
+
+Practically: Most teams instrument entry/exit points and key dependencies for tracing, and rely on logs for finer-grained events, especially in business, application, and data access layers.
+
+Tracing shines for visualizing the flow and timing between layers, if those layers are instrumented. Logs fill in the gaps—providing high-detail context, capturing events not covered by tracing, and helping pinpoint logic and business-level issues within those layers.
+
+# IaaC 
+Everybody knows about it.
+## Pulumi
+Lets try it. Documentation link is https://www.pulumi.com/docs/.
+
+> The very first thing that you need to do is 
+> https://www.pulumi.com/docs/iac/get-started/azure/configure/
+
+> For a beginner tutorial follow: https://www.youtube.com/watch?v=aW8C6iePwho&list=PL1-YVF0mZ9gn77jus2WAqpzRy9g7m1HN5&index=1
+
+
+If you want to use DIY backend for Pulumi then follow along https://www.pulumi.com/docs/iac/concepts/state-and-backends/#local-filesystem
+
+For this experiment using local file system so 
+```pwsh
+az login # required to as Pulumi uses azure login to proceed 
+pulumi login file://../PulumiState
+pulumi logout
+az logout
+```
+
+### Pulumi Naming Convention
+How Pulumi manages the resource naming and their updates is really interesting. It is worth to understand and available [here](https://www.pulumi.com/docs/iac/concepts/resources/names/#autonaming).
+
+Pulumi [registry link](https://www.pulumi.com/registry/) where you could explore different provider specific option and how to configure them.
+
 
 # Coding Piece
 The **src** folder will contain the codes of different use cases and scenarios.
@@ -67,7 +121,7 @@ The **src** folder will contain the codes of different use cases and scenarios.
 * To work the intellisense properly open the folder in vscode that contain .sln file (in case of multi-project support) or the .csproj file. 
 * The above being the constarint you should have your `launch.json` and `task.json` files at the root of your solution folder
 * > This opens up an interesting observation. If you look closely then you will realize that `launch.json` and `task.json` files sits inside the `.vscode` folder which is vscode IDE specific. In the same way `.vs` folder is Visual Studio IDE specific.
-* Continuing to the above it gives flexibility to define by launch technique at different level which is awesome.
+* Continuing to the above it gives flexibility to define launch technique at different level which is awesome.
 
 _**The "Setup as Startup Project Option"**_ is not available in VS Code rather you need to managed by defining debug configurations in the launch.json file. This file resides at: .vscode/launch.json within your workspace (project) folder.
 
@@ -157,8 +211,16 @@ sh
 dotnet nuget list source
 This modifies your user-level or specified nuget.config.
 
+#### How you run multiple project in a solution
 
+> Follow the example of ExOfOptel in this repo to understnd the scenario better.
 
+You can do this in VS Code by combining a task (to run the “no-debug” project) with a debug launch config (for the project you want to debug), and then trigger both together using a compound configuration.
+
+> when I setup , and started .... vscode said it is waiting for pre-launch task but actually it does not proceed and stuck ..... then I have to press Cntrl + C and then I see the project B started running ..... what happened ?
+
+This usually happens when the preLaunchTask is a long‑running server (e.g., dotnet run, npm start, python app.py) and VS Code is waiting for it to finish before starting your debug config. When you press Ctrl+C, you kill that task, so the debugger proceeds to start Project B—exactly what you observed.
+To make VS Code start debugging once Project A is “ready” (not terminated), the task must be marked as a background task and include a problem matcher that tells VS Code when the app is ready.
 
 ## Adoption of Command Chaining
 Here the intension is to create pipeline based orchestration through code that will be flexible and configuration driven. It will actually going to execute business rule/steps in a defined sequence and if being changed in configuration then the sequence will be changed. However it will not require any code change. It gives flexibility defining the rule based product offering through orchestration.

@@ -55,3 +55,35 @@ nunit-*.xml
 
 # Visual studio folders
 .vs/
+
+# Local Pulumi state
+Pulumi.*.yaml
+
+# Pulumi secrets file (do not commit; contains sensitive data!)
+Pulumi.*.secrets.yaml
+
+# Pulumi history backups
+.pulumi.history/
+.pulumi/
+# Node.js dependencies (if using JavaScript/TypeScript)
+node_modules/
+
+# Python virtual environments (if using Python)
+venv/
+.env
+__pycache__/
+
+# Go build outputs (if using Go)
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Other common files/folders to ignore
+*.log
+.DS_Store
+*.pyc
+.idea/
+#.vscode/
