@@ -6,6 +6,7 @@
   - [The main components of Open Telemetry](#the-main-components-of-open-telemetry)
   - [What are exemplars](#what-are-exemplars)
   - [Notes](#notes)
+- [MAUI (Multi-platform App UI):](#maui-multi-platform-app-ui)
 - [IaaC](#iaac)
   - [Pulumi](#pulumi)
     - [Pulumi Naming Convention](#pulumi-naming-convention)
@@ -19,9 +20,14 @@
       - [More in Project Templates:](#more-in-project-templates)
       - [Nuget Package Management](#nuget-package-management)
       - [How you run multiple project in a solution](#how-you-run-multiple-project-in-a-solution)
+    - [What is global.json](#what-is-globaljson)
+      - [Where does .NET search for global.json?](#where-does-net-search-for-globaljson)
+      - [⚙️ How does global.json behave?](#️-how-does-globaljson-behave)
+      - [🛠️ How to create global.json](#️-how-to-create-globaljson)
   - [Adoption of Command Chaining](#adoption-of-command-chaining)
   - [Open Telemetry in .NET](#open-telemetry-in-net)
     - [Adding Trace](#adding-trace)
+  - [MAUI (Multi-platform App UI )](#maui-multi-platform-app-ui-)
 
 # Why the repo name is like this?
 The main moto is to stick onto one single repo and add technology based experiments in different folder. This will help to maintainence and further promote automation. The final goal is to create better documentation with every single thought and trade-offs and also integrate full automation with the extent possible. 
@@ -84,6 +90,9 @@ Ideally: Instrument as many meaningful layers as possible for tracing, so you ca
 Practically: Most teams instrument entry/exit points and key dependencies for tracing, and rely on logs for finer-grained events, especially in business, application, and data access layers.
 
 Tracing shines for visualizing the flow and timing between layers, if those layers are instrumented. Logs fill in the gaps—providing high-detail context, capturing events not covered by tracing, and helping pinpoint logic and business-level issues within those layers.
+
+# MAUI (Multi-platform App UI):
+The Guidence documentaion could be found [here](./ChildReadMes/MAUI.md#maui-guidence)
 
 # IaaC 
 Everybody knows about it.
@@ -222,6 +231,74 @@ You can do this in VS Code by combining a task (to run the “no-debug” projec
 This usually happens when the preLaunchTask is a long‑running server (e.g., dotnet run, npm start, python app.py) and VS Code is waiting for it to finish before starting your debug config. When you press Ctrl+C, you kill that task, so the debugger proceeds to start Project B—exactly what you observed.
 To make VS Code start debugging once Project A is “ready” (not terminated), the task must be marked as a background task and include a problem matcher that tells VS Code when the app is ready.
 
+### What is global.json
+global.json is a configuration file used by the .NET CLI to tell it which .NET SDK version to use when running any dotnet command in a directory (or its children).
+Microsoft’s documentation states:
+
+> “The global.json file allows you to define which .NET SDK version is used when you run .NET CLI commands.”
+
+👉 Even if multiple SDKs are installed
+the CLI will use the SDK version specified in global.json, not the newest one on your machine.
+
+👉 SDK selection is SDK-only
+It does not control the runtime version your project targets.
+Microsoft clarifies that SDK selection is independent from the runtime target.
+
+#### Where does .NET search for global.json?
+The CLI looks for global.json:
+
+In the current directory
+
+If not found → in parent directories, walking up the folder tree.
+
+This means putting a global.json at the root of a repo affects all projects in that repository.
+
+#### ⚙️ How does global.json behave?
+
+- 1️⃣ It locks the SDK version
+Example from Microsoft Docs:
+``` json
+
+{
+  "sdk": {
+    "version": "10.0.100"
+  }
+}
+This tells .NET CLI:
+
+“Always use SDK version 10.0.100 in this folder.”
+
+Microsoft states the version must be a full version number like 10.0.100 (no wildcards like 10.0.*).
+```
+- 2️⃣ It supports roll-forward rules
+You can allow using newer SDK versions in the same band.
+Example from docs:
+``` json
+
+{
+  "sdk": {
+    "version": "10.0.100",
+    "rollForward": "latestFeature"
+  }
+}
+The docs explain that rollForward determines whether the CLI can use a later SDK version if the exact version is not installed.
+```
+- 3️⃣ It ensures reproducible builds
+This avoids scenarios where:
+
+Developer A builds with SDK 8.0.100
+Developer B builds with SDK 8.0.300
+CI builds with 9.0-preview
+
+→ Resulting in inconsistent binaries and failures.
+
+#### 🛠️ How to create global.json
+
+- Using .NET CLI:
+``` pwsh
+dotnet new global.json --sdk-version 10.0.103
+```
+
 ## Adoption of Command Chaining
 Here the intension is to create pipeline based orchestration through code that will be flexible and configuration driven. It will actually going to execute business rule/steps in a defined sequence and if being changed in configuration then the sequence will be changed. However it will not require any code change. It gives flexibility defining the rule based product offering through orchestration.
 
@@ -262,3 +339,5 @@ app.MapGet("/", () => $"Hello World! OpenTelemetry Trace: {Activity.Current?.Id}
 app.Run();
 
 ```
+## MAUI (Multi-platform App UI )
+The details of Implementaion would be found [here](./ChildReadMes/MAUI.md#maui-implementation).
